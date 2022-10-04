@@ -11,6 +11,7 @@ users.hasMany(tasks, {
     as: "tasks"
 });
 
+//Has One
 users.hasOne(infos, {
     foreignKey: "user_id",
     as: "user_info"
