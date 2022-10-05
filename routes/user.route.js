@@ -17,5 +17,11 @@ UserRouter.post('/get-user-by/:id', async (req, res) => {
     return res.status(response.status).send(response);
 });
 
+UserRouter.post('/delete-user-by-id/:id', async (req, res) => {
+    const response = await UserController.deactUser(req.params.id);
+    return res.status(response.status).send(response);
+});
+
+
 
 module.exports = UserRouter;

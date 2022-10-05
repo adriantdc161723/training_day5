@@ -69,7 +69,8 @@ class TaskService extends Response{
             });
 
             if(find){
-                const response = this.RESPONSE(OK, find, OK_MESSAGE);
+                const filteredActiveTasks = find.filter( task => task.is_active );
+                const response = this.RESPONSE(OK, filteredActiveTasks, OK_MESSAGE);
                 return response;
             } else {
                 return this.RESPONSE(BADREQUEST, {}, BADREQUEST_MESSAGE);
@@ -147,7 +148,7 @@ class TaskService extends Response{
                 
             });
 
-            if(find){
+            if(find.is_active){
                 const response = this.RESPONSE(OK, find, OK_MESSAGE);
                 return response;
             } else {
@@ -158,6 +159,22 @@ class TaskService extends Response{
             return this.RESPONSE(INTERNAL_SERVER_ERROR, error.message, INTERNAL_SERVER_ERROR_MESSAGE);
         }
 
+    }
+
+    async deleteTask (taskID) {
+        try {
+            
+            const update = await Tasks.update({ is_active: false }, {where: { id: taskID } });
+
+            if(update){
+                return this.RESPONSE(OK, update, `task: ${taskID} deleted`);
+            } else {
+                return this.RESPONSE(BADREQUEST, {}, BADREQUEST_MESSAGE);
+            }
+
+        } catch (error) {
+            return this.RESPONSE(INTERNAL_SERVER_ERROR, error.message, INTERNAL_SERVER_ERROR_MESSAGE);
+        }
     }
 
 }

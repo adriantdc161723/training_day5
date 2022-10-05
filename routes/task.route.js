@@ -17,7 +17,13 @@ TaskRouter.post('/get-task-by-id/:id', async (req, res) => {
 });
 
 TaskRouter.get('/query-tasks', async (req, res) => {
+    
     const response = await TaskController.queryTask(req.query);
+    return res.status(response.status).send(response);
+});
+
+TaskRouter.post('/delete-task-by-id/:id', async (req, res) => {
+    const response = await TaskController.deleteTask(req.params.id);
     return res.status(response.status).send(response);
 });
 

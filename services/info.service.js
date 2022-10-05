@@ -27,14 +27,28 @@ class InfoService extends Response{
 
         try {
 
-            const create = await Infos.create(requestObject);
+            const find = await Infos.findOne({ where: { user_id: requestObject.user_id } });
 
-            if(create){
-                const response = this.RESPONSE(CREATED, create, CREATED_MESSAGE);
-                return response;
+            if(!find){
+
+                const create = await Infos.create(requestObject);
+
+                return create
+                    ?  this.RESPONSE(CREATED, create, CREATED_MESSAGE)
+                    : this.RESPONSE(BADREQUEST, {}, BADREQUEST_MESSAGE);
+
             } else {
-                return this.RESPONSE(BADREQUEST, {}, BADREQUEST_MESSAGE);
+
+                //update info of user instead of creating one since Info is existing for the user_id
+                const update = await Infos.update(requestObject, { where: { user_id: requestObject.user_id } });
+
+                return update
+                    ? this.RESPONSE(UPDATE, update, UPDATE_MESSAGE)
+                    : this.RESPONSE(BADREQUEST, {}, BADREQUEST_MESSAGE);
+
             }
+
+          
 
         } catch (error) {
 

@@ -21,11 +21,12 @@ const {
     UPDATE_MESSAGE, 
     INTERNAL_SERVER_ERROR_MESSAGE
 } = require('../utils/message.util');
+const { and } = require('sequelize');
 
 
 class UserService extends Response{
 
-    async createUser () {
+    async createUser (requestObject) {
 
         try {
 
@@ -73,7 +74,8 @@ class UserService extends Response{
             });
 
             if(find){
-                const response = this.RESPONSE(OK, find, OK_MESSAGE);
+                const filteredActiveUser = find.filter( user => user.is_active );
+                const response = this.RESPONSE(OK, filteredActiveUser, OK_MESSAGE);
                 return response;
             } else {
                 return this.RESPONSE(BADREQUEST, {}, BADREQUEST_MESSAGE);
@@ -90,7 +92,7 @@ class UserService extends Response{
         try {
 
             const find = await Users.findOne({
-                where:{ id: userID },
+                where: { id: userID },
                 include: [
                     {
                         model: Infos,
@@ -113,9 +115,8 @@ class UserService extends Response{
                 }
             });
 
-            if(find){
-                const response = this.RESPONSE(OK, find, OK_MESSAGE);
-                return response;
+            if(find.is_active){
+                return this.RESPONSE(OK, find, OK_MESSAGE);
             } else {
                 return this.RESPONSE(BADREQUEST, {}, BADREQUEST_MESSAGE);
             }
@@ -125,6 +126,25 @@ class UserService extends Response{
         }
 
     }
+
+    async deactUser (userID) {
+
+        try {
+
+           const update = await Users.update({ is_active: false }, { where: { id: userID } });
+
+           if(update){
+                return this.RESPONSE(OK, update, `user: ${userID} deleted`);
+           } else {
+                return this.RESPONSE(BADREQUEST, {}, BADREQUEST_MESSAGE);
+           }
+
+        } catch (error) {
+            return this.RESPONSE(INTERNAL_SERVER_ERROR, error.message, INTERNAL_SERVER_ERROR_MESSAGE);
+        }
+
+    }
+
 
 }
 

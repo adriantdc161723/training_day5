@@ -17,6 +17,11 @@ class UserController{
         const response = await UserService.getUserByID(userID);
         return response;
     }
+
+    async deactUser (userID) {
+        const response = await UserService.deactUser(userID);
+        return response;
+    }
     
 }
 

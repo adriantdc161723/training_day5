@@ -17,13 +17,22 @@ class TaskController {
     }
 
     async queryTask ({offset, limit, sort, order}) {
+
         const response = await TaskService.queryTask(
             offset ? parseInt(offset) : 0,
             limit ? parseInt(limit) : 5,
             sort ? sort : "id",
             order ? order : "ASC"
             );
+
         return response;
+    }
+
+    async deleteTask (taskID) {
+
+        const response = await TaskService.deleteTask(taskID);
+        return response;
+
     }
 }
 
